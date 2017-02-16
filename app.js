@@ -90,7 +90,72 @@ app.post('/board', upload.single('file_upload2'), function(req, res) {
              console.log('data' + data);
         //     res.writeHead(200, {"ContentType": "text/plain"})
         //     res.end(data);
+      //  fileID.push(rows[i].file_id);
+      //  fileName.push(rows[i].file_name);
+      //  fileContents.push(rows[i].user_contents);
 
+        //겹치는 녀석인지 비교를 시작한다!
+        var flag=0;
+        for (var i =0; i<fileName.length; i++)
+        {
+          //겹치는 녀석이네??
+            if(fileName[i]==req.param('title'))
+            {
+                //history 업데이트
+
+                var sql="insert into file_history (file_upload_time, user_message, file_id, id) values (?,?,?,?)"
+                var params = [new Date(), req.param('comments'), fileID[i], user_id];
+  console.log(typeof(new Date()),'zzzzzzzzzzzzzzzzz',params);
+                //console.log(user_id+"zzz");
+                pool.query(sql,params, function(err, rows, fields){
+                    if(err)
+                      console.log(err);
+
+                      //다시 가져온다!!
+                    var sql="select file_id, file_name, user_contents from file where id=?";
+                    var params = [user_id];
+                    pool.query(sql,params, function(err, rows, fields){
+                        if(err)
+                          console.log(err);
+                        else{
+                          for(var i=0;i<rows.length;i++)
+                            {
+                              //겹치는애 있는지 확인하고 없을 경우 업데이트
+                              var dupFlag=0;
+                              for(var j=0;j<fileID.length;j++)
+                              {
+                              //  console.log('h');
+                                if (fileID[j]==rows[i].file_id)
+                                {
+                                //  console.log('z');
+                                  dupFlag=1;
+                                  break;
+                                }
+                              }
+
+                              if(dupFlag==0)
+                              {
+                                fileID.push(rows[i].file_id);
+                                fileName.push(rows[i].file_name);
+                                fileContents.push(rows[i].user_contents);
+                                //console.log(rows[i].file_name, rows[i].file_id. rows[i].user_contents);
+                              }
+
+                            }
+                            res.render('board.html',{_id : fileID, _name : fileName, _time : uploadTime, _user : user_id});
+
+                        }
+                    });
+
+
+
+            });
+              flag=1;
+              break;
+          }
+        }
+
+        if(flag==0){
         //db 소환
         //var sql="select file_id, file_name, user_contents from file where id=?";
         var sql="insert into file (file_name, user_contents, id) values (?,?,?)"
@@ -102,6 +167,7 @@ app.post('/board', upload.single('file_upload2'), function(req, res) {
 
 
 
+                //다시 가져온다!!
               var sql="select file_id, file_name, user_contents from file where id=?";
               var params = [user_id];
               pool.query(sql,params, function(err, rows, fields){
@@ -141,6 +207,7 @@ app.post('/board', upload.single('file_upload2'), function(req, res) {
 
               //res.render('board.html',{_id : fileID, _name : fileName, _time : uploadTime, _user : user_id});
         });
+      }
       });
 
   }
