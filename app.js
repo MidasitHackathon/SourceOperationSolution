@@ -37,29 +37,77 @@ app.use(expressSession({
 }));
 
 // 로그인 처리 함수
-app.post('/process/login', function(req, res) {
-   console.log('/process/login 호출됨.');
+app.get('/login',function(req,res){
+  res.render('login.html');
+})
 
-   var paramId = req.param('id');
-   var paramPassword = req.param('password');
+//로그인 했을때 board 로 넘어간다.
+app.post('/board', function(req, res) {
 
-   if (pool){
+   paramId = req.param('id');
+   paramPassword = req.param('password');
+   console.log(paramId, paramPassword);
+//   console.log("hppay");
+   if(pool){
       authUser(paramId, paramPassword, function(err, rows) {
          if (err) {throw err;}
 
+        //로그인 성공!
          if (rows) {
             console.dir(rows);
+            console.log('he');
+            console.log('hello',rows);
 
-            var username = rows[0].name;
+////        복붙
+//var user_id='user2';
+var user_id = paramId;//!!얘를 어떻게 다뤄야 하나?
+//디비로 부터 파일을 받아와서 뿌려야.
+//여기서 db를 받으면 안되고, 초반부에 질러줘야 한다.
 
-        res.redirect('/public/board.html');
+var sql="select file_id, file_name, user_contents from file where id=?";
+var params = [user_id];
+pool.query(sql,params, function(err, rows, fields){
+    if(err)
+      console.log(err);
+    else{
+      for(var i=0;i<rows.length;i++)
+        {
+          //겹치는애 있는지 확인하고 없을 경우 업데이트
+          var dupFlag=0;
+          for(var j=0;j<fileID.length;j++)
+          {
+          //  console.log('h');
+            if (fileID[j]==rows[i].file_id)
+            {
+            //  console.log('z');
+              dupFlag=1;
+              break;
+            }
+          }
+
+          if(dupFlag==0)
+          {
+            fileID.push(rows[i].file_id);
+            fileName.push(rows[i].file_name);
+            fileContents.push(rows[i].user_contents);
+            //console.log(rows[i].file_name, rows[i].file_id. rows[i].user_contents);
+          }
+
+        }
+        res.render('board.html',{_id : fileID, _name : fileName, _time : uploadTime, _user : user_id});
+
+    }
+});
+
+////  복붙
 
 
+      //      res.render('/board');
          } else {
             res.writeHead('200', {'Content-Type':'text/html;charset=utf8'});
             res.write('<h1>로그인  실패</h1>');
             res.write('<div><p>아이디와 패스워드를 다시 확인하십시오.</p></div>');
-            res.write("<br><br><a href='/public/login2.html'>다시 로그인하기</a>");
+            res.write("<br><br><a href='/public/login.html'>다시 로그인하기</a>");
             res.end();
          }
       });
@@ -69,23 +117,27 @@ app.post('/process/login', function(req, res) {
       res.write('<div><p>데이터베이스에 연결하지 못했습니다.</p></div>');
       res.end();
    }
-
 });
 
 
 var authUser = function(id,password,callback)
 {
-  pool.getConnection(function(err,conn){
+/*  pool.getConnection(function(err,conn){
     if(err){
       conn.release();
       return;
     }
-
+*/
+  console.log('authuser');
     var columns = ['id','password'];
     var tablename='user';
 
-    var exe = conn.query("select ?? from ?? where id=? and password =?",[columns,tablename,id,password],function(err,rows){
-      conn.release();
+    var exe = pool.query("select * from user where id=? and password =?",[id,password],function(err,rows){
+    //  pool.release();
+
+      if(err){
+        return;
+      }
       if(rows.length>0)
       {
         callback(null,rows);
@@ -94,15 +146,13 @@ var authUser = function(id,password,callback)
         callback(null,null);
       }
     });
-    conn.on('error', function(err) {
+/*    pool.on('error', function(err) {
           console.log('데이터베이스 연결 시 에러 발생함.');
           console.dir(err);
           callback(err, null);
     });
-
-  });
+*/
 }
-
 
 
 //===== 서버 시작 =====//
