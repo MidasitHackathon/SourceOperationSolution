@@ -47,13 +47,12 @@ app.use(expressSession({
 app.get('/login',function(req,res){
   res.render('login.html');
 })
-
+app.get('/profile',function(req, res){
+  res.render('profile.html');
+})
 //로그인 했을때 board 로 넘어간다.
 app.post('/board', function(req, res) {
 
-  fileID=[];
-  fileName=[];
-  fileContents=[];
 //search 했을 경우와 login했을 경우를 나누어 생각하자
   if (req.param('search'))
   {
@@ -104,6 +103,29 @@ app.post('/board', function(req, res) {
       });
 
   }
+//계정 수정했을 경우
+  else if(req.param('email'))
+  {
+    console.log('zzz');
+
+    var sql="update user set password = ?, name = ?, email = ? where user.id= ?";
+    var params = [req.param('password'), req.param('name'), req.param('email'), user_id];
+    pool.query(sql,params, function(err, rows, fields){
+        if(err)
+          console.log(err);
+        else{
+        //  alert('수정되었습니다!');
+        console.log(fileID);
+          res.render('board.html',{_id : fileID, _name : fileName, _time : uploadTime, _user : user_id});
+
+        }
+    });
+
+
+
+
+  }
+
 //login 했을 경우
   else{
 
