@@ -19,75 +19,75 @@
     <![endif]-->
   </head>
   <body>
-  	<div class="header">
-	     <div class="container">
-	        <div class="row">
-	           <div class="col-md-5">
-	              <!-- Logo -->
-	              <div class="logo">
-	                 <h1><a href="index.html">Bootstrap Admin Theme</a></h1>
-	              </div>
-	           </div>
-	           <div class="col-md-5">
-	              <div class="row">
-	                <div class="col-lg-12">
-	                  <div class="input-group form">
-                      <form method="post" action="/board">
-	                       <input type="text" name = "search"class="form-control" placeholder="Search...">
-	                       <span class="input-group-btn">
-	                         <button class="btn btn-primary" input type = "summit" type="button">Search</button>
-	                       </span>
+     <div class="header">
+        <div class="container">
+           <div class="row">
+              <div class="col-md-5">
+                 <!-- Logo -->
+                 <div class="logo">
+                    <h1><a href="index.html">Bootstrap Admin Theme</a></h1>
+                 </div>
+              </div>
+              <div class="col-md-5" >
+                 <div class="row" >
+                   <div class="col-lg-12" >
+                     <div class="input-group form"   >
+                      <form method="post" action="/board"    >
+                          <input type="text" name = "search"class="form-control" style = "width:230px"  placeholder="Search..."  >
+                          <span class="input-group-btn" style= "float:right" >
+                            <button class="btn btn-primary" input type = "summit" type="button" >Search</button>
+                          </span>
                        </form>
-	                  </div>
-	                </div>
-	              </div>
-	           </div>
-	           <div class="col-md-2">
-	              <div class="navbar navbar-inverse" role="banner">
-	                  <nav class="collapse navbar-collapse bs-navbar-collapse navbar-right" role="navigation">
-	                    <ul class="nav navbar-nav">
-	                      <li class="dropdown">
-	                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">My Account <b class="caret"></b></a>
-	                        <ul class="dropdown-menu animated fadeInUp">
-	                          <li><a href="/profile">Profile</a></li>
-	                          <li><a href="/login">Logout</a></li>
-	                        </ul>
-	                      </li>
-	                    </ul>
-	                  </nav>
-	              </div>
-	           </div>
-	        </div>
-	     </div>
-	</div>
+                     </div>
+                   </div>
+                 </div>
+              </div>
+              <div class="col-md-2">
+                 <div class="navbar navbar-inverse" role="banner">
+                     <nav class="collapse navbar-collapse bs-navbar-collapse navbar-right" role="navigation">
+                       <ul class="nav navbar-nav">
+                         <li class="dropdown">
+                           <a href="#" class="dropdown-toggle" data-toggle="dropdown">My Account <b class="caret"></b></a>
+                           <ul class="dropdown-menu animated fadeInUp">
+                             <li><a href="/profile">Profile</a></li>
+                             <li><a href="/login">Logout</a></li>
+                           </ul>
+                         </li>
+                       </ul>
+                     </nav>
+                 </div>
+              </div>
+           </div>
+        </div>
+   </div>
 
 
-		  <div class="col-md-10">
+        <div class="col-md-10" >
 
-		  	<div class="row">
-  				<div class="col-md-6">
-  					<div class="content-box-large">
-		  				<div class="panel-heading">
-							<div class="panel-title">Striped Rows</div>
+           <div class="row">
+              <div class="col-md-6" style="width:100%">
+                 <div class="content-box-large">
+                    <div class="panel-heading">
+                     <div class="panel-title"></div>
 
-							<div class="panel-options">
-								<a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
-								<a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
-							</div>
-						</div>
-		  				<div class="panel-body">
-		  					<table class="table table-striped">
-				              <thead>
+                     <div class="panel-options">
+                        <a href="#" data-rel="collapse"><i class="glyphicon glyphicon-refresh"></i></a>
+                        <a href="#" data-rel="reload"><i class="glyphicon glyphicon-cog"></i></a>
+                     </div>
+                  </div>
+                    <div class="panel-body">
+                       <table class="table table-striped" >
+                          <thead>
 
-				                <tr>
-				                  <th>#</th>
-				                  <th>File title</th>
-				                  <th>uploaded time</th>
-				                  <th>Username</th>
-				                </tr>
-				              </thead>
+                            <tr>
+                              <th>#</th>
+                              <th>File Id</th>
+                              <th>File Name</th>
+                              <th>Username</th>
+                            </tr>
+                          </thead>
 
-				              <tbody>
+                          <tbody>
 
 
                         <%for (var i=0; i<_name.length; i++){%>
@@ -96,21 +96,21 @@
                             <td><a href = "/board_contents?id=<%=i%>"><%=_id[i]%></a></td>
 
                             <td><a href = "/board_contents?id=<%=i%>"><%=_name[i]%></a></td>
-  				                  
+
                             <td><a href = "/board_contents?id=<%=i%>"><%=_user%></a></td>
 
-  				                </tr>
+                              </tr>
 
                         <%}%>
 
 
 
-				              </tbody>
-				            </table>
-		  				</div>
-		  			</div>
-  				</div>
-  			</div>
+                          </tbody>
+                        </table>
+                    </div>
+                 </div>
+              </div>
+           </div>
         <p>
           <div style="text-align:right">
           <a href='/upload'><button class="btn btn-primary btn-lg">Upload</button></a>
@@ -118,10 +118,10 @@
           </p>
 
 
-    <footer>
+    <footer style="margin-top:450px">
          <div class="container">
 
-            <div class="copy text-center">
+            <div class="copy text-center" >
                Copyright 2014 <a href='#'>Website</a>
             </div>
 
@@ -130,11 +130,11 @@
 
       <link href="vendors/datatables/dataTables.bootstrap.css" rel="stylesheet" media="screen">
 
-    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <!— jQuery (necessary for Bootstrap's JavaScript plugins) —>
     <script src="https://code.jquery.com/jquery.js"></script>
-    <!-- jQuery UI -->
+    <!— jQuery UI —>
     <script src="https://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
-    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <!— Include all compiled plugins (below), or include individual files as needed —>
     <script src="bootstrap/js/bootstrap.min.js"></script>
 
     <script src="vendors/datatables/js/jquery.dataTables.min.js"></script>
