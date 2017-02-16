@@ -68,11 +68,16 @@
       </tr>
     </thead>
     <tbody>
-      <tr class="odd gradeX">
-        <td>2012 4/5</td>
-        <td>fix the errror</td>
 
-      </tr>
+      <%for (var i=0; i<_times.length;i++) { %>
+        <tr class="odd gradeX">
+          <td><%=_times[i]%></td>
+          <td><a href=board_contents?id=<%=_id%>><%=_comments[i]%></a></td>
+
+        </tr>
+
+      <%}%>
+
       <tr class="even gradeC">
         <td>2012 4/2</td>
         <td><a href=board_contents>align the line</a></td>
