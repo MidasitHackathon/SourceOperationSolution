@@ -90,10 +90,12 @@
 
                         <%for (var i=0; i<_name.length; i++){%>
                           <tr>
-                            <td>1</td>
-  				                  <td><a href = "/board_contents?id=<%=_id[i]%>"><%=_name[i]%></a></td>
-  				                  <td><a href = "/board_contents?id=<%=_id[i]%>"><%=_time[i]%></a></td>
-                            <td><a href = "/board_contents?id=<%=_id[i]%>"><%=_user[i]%></a></td>
+                            <td><%=i+1%></td>
+                            <td><a href = "/board_contents?id=<%=i%>"><%=_id[i]%></a></td>
+
+                            <td><a href = "/board_contents?id=<%=i%>"><%=_name[i]%></a></td>
+  				                  <td><a href = "/board_contents?id=<%=i%>"><%=_time[i]%></a></td>
+                            <td><a href = "/board_contents?id=<%=i%>"><%=_user%></a></td>
 
   				                </tr>
 
