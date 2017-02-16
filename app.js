@@ -16,8 +16,13 @@ app.locals.pretty = true; //ㅋ코드 예쁘게 만들어주기
 app.get('/index.html', function(req, res){
 	res.render('index.html');
 });
+app.get('/board', function(req,res){
+	res.render('board.html');
+})
 
-
+app.get('/board_contents', function(req,res){
+	res.render('board_contents.html');
+})
 app.listen(3001, function(){
 	console.log('Connected 3001 port!' );
 });
