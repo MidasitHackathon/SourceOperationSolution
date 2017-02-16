@@ -17,6 +17,13 @@ var pool = mysql.createPool({
   database:'myapp'
 });
 
+var user_id ="";
+var sfileContents=[];
+var fileID=[];
+var fileName=[];
+var fileContents=[];
+var uploadTime =['12:03', '14:20', '14:30','12:03', '14:20', '14:30','12:03', '14:20', '14:30'];
+var userName = ['jin', 'woo', 'ahn','jin', 'woo', 'ahn','jin', 'woo', 'ahn'];
 
 //===== Express 서버 객체 만들기 =====//
 var app = express();
@@ -44,6 +51,62 @@ app.get('/login',function(req,res){
 //로그인 했을때 board 로 넘어간다.
 app.post('/board', function(req, res) {
 
+  fileID=[];
+  fileName=[];
+  fileContents=[];
+//search 했을 경우와 login했을 경우를 나누어 생각하자
+  if (req.param('search'))
+  {
+  //  console.log(req.param('search'));
+      var search=req.param('search');
+
+//db  로부터 가져와서 비교하자!
+      var sql="select file_id, file_name, user_contents from file where id=?";
+
+      var params = [user_id];
+      //console.log(user_id+"zzz");
+      pool.query(sql,params, function(err, rows, fields){
+          if(err)
+            console.log(err);
+          else{
+            fileID=[];
+            fileName=[];
+            fileContents=[];
+            for(var i=0;i<rows.length;i++)
+              {
+
+
+
+                var extention=rows[i].file_name.split('.');
+                extention = extention[extention.length-1];
+                console.log(extention);
+
+                console.log(rows[i].file_name+' hahahoho');
+
+                //예외처리 .exe검색할때
+                if(search[0]=='.')
+                  search=search.split('.')[1];
+
+                if(search==rows[i].file_name || search==extention)
+                {
+
+                  fileID.push(rows[i].file_id);
+                  fileName.push(rows[i].file_name);
+                  fileContents.push(rows[i].user_contents);
+                  //console.log(rows[i].file_name, rows[i].file_id. rows[i].user_contents);
+                }
+
+              }
+              console.log(fileName);
+              res.render('board.html',{_id : fileID, _name : fileName, _time : uploadTime, _user : user_id});
+
+          }
+      });
+
+  }
+//login 했을 경우
+  else{
+
    paramId = req.param('id');
    paramPassword = req.param('password');
    console.log(paramId, paramPassword);
@@ -60,7 +123,8 @@ app.post('/board', function(req, res) {
 
 ////        복붙
 //var user_id='user2';
-var user_id = paramId;//!!얘를 어떻게 다뤄야 하나?
+//var user_id = paramId;//!!얘를 어떻게 다뤄야 하나?
+user_id=paramId;
 //디비로 부터 파일을 받아와서 뿌려야.
 //여기서 db를 받으면 안되고, 초반부에 질러줘야 한다.
 
@@ -117,6 +181,7 @@ pool.query(sql,params, function(err, rows, fields){
       res.write('<div><p>데이터베이스에 연결하지 못했습니다.</p></div>');
       res.end();
    }
+ }
 });
 
 
