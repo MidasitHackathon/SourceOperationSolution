@@ -19,6 +19,9 @@ app.get('/index.html', function(req, res){
 app.get('/board', function(req,res){
 	res.render('board.html');
 })
+app.get('/history',function(req,res){
+	res.render('history.html');
+})
 
 app.get('/board_contents', function(req,res){
 	res.render('board_contents.html');
