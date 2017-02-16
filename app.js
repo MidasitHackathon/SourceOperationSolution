@@ -7,6 +7,23 @@ var cookieParser = require('cookie-parser');
 var expressSession = require('express-session');
 var expressErrorHandler = require('express-error-handler');
 
+//var bodyParser = require('body-parser');
+var fs = require('fs');
+var multer = require('multer');
+var _storage = multer.diskStorage({
+   destination: function(req, file, cb){
+      cb(null, 'uploads/')
+   },
+   filename:function (req, file, cb){
+      cb(null, file.originalname);
+   }
+})
+
+
+//업로드 부위
+var upload = multer({storage: _storage});
+
+
 var mysql = require('mysql');
 var pool = mysql.createPool({
   connectionLimit : 10,
@@ -21,6 +38,12 @@ var user_id ="";
 var sfileContents=[];
 var fileID=[];
 var fileName=[];
+
+
+var fileID=[];
+var fileName=[];
+var fileContents=[];
+
 var fileContents=[];
 var uploadTime =['12:03', '14:20', '14:30','12:03', '14:20', '14:30','12:03', '14:20', '14:30'];
 var userName = ['jin', 'woo', 'ahn','jin', 'woo', 'ahn','jin', 'woo', 'ahn'];
@@ -51,10 +74,80 @@ app.get('/profile',function(req, res){
   res.render('profile.html');
 })
 //로그인 했을때 board 로 넘어간다.
-app.post('/board', function(req, res) {
+app.post('/board', upload.single('file_upload2'), function(req, res) {
 
 //search 했을 경우와 login했을 경우를 나누어 생각하자
-  if (req.param('search'))
+  if(req.param('comments'))
+  {
+
+        //  console.log(req.file);
+          console.log(req.param('comments'), req.param('title'));
+        //  console.log(req.param('file'));
+    //      req.param('file')
+
+          fs.readFile('./uploads/' + req.file.originalname,  function(err, data) {
+            if(err) throw err;
+             console.log('data' + data);
+        //     res.writeHead(200, {"ContentType": "text/plain"})
+        //     res.end(data);
+
+        //db 소환
+        //var sql="select file_id, file_name, user_contents from file where id=?";
+        var sql="insert into file (file_name, user_contents, id) values (?,?,?)"
+        var params = [req.param('title'), data, user_id];
+        //console.log(user_id+"zzz");
+        pool.query(sql,params, function(err, rows, fields){
+            if(err)
+              console.log(err);
+
+
+
+              var sql="select file_id, file_name, user_contents from file where id=?";
+              var params = [user_id];
+              pool.query(sql,params, function(err, rows, fields){
+                  if(err)
+                    console.log(err);
+                  else{
+                    for(var i=0;i<rows.length;i++)
+                      {
+                        //겹치는애 있는지 확인하고 없을 경우 업데이트
+                        var dupFlag=0;
+                        for(var j=0;j<fileID.length;j++)
+                        {
+                        //  console.log('h');
+                          if (fileID[j]==rows[i].file_id)
+                          {
+                          //  console.log('z');
+                            dupFlag=1;
+                            break;
+                          }
+                        }
+
+                        if(dupFlag==0)
+                        {
+                          fileID.push(rows[i].file_id);
+                          fileName.push(rows[i].file_name);
+                          fileContents.push(rows[i].user_contents);
+                          //console.log(rows[i].file_name, rows[i].file_id. rows[i].user_contents);
+                        }
+
+                      }
+                      res.render('board.html',{_id : fileID, _name : fileName, _time : uploadTime, _user : user_id});
+
+                  }
+              });
+
+
+
+              //res.render('board.html',{_id : fileID, _name : fileName, _time : uploadTime, _user : user_id});
+        });
+      });
+
+  }
+
+
+
+  else if (req.param('search'))
   {
   //  console.log(req.param('search'));
       var search=req.param('search');
@@ -252,11 +345,6 @@ http.createServer(app).listen(app.get('port'), function(){
 //url 치고 들어오는 사용자
 //var fileID = ['0','1','2','3','4','5','6','7','8','9'];
 //var fileName =['f1','f2','f3','f1','f2','f3','f1','f2','f3'];
-var fileID=[];
-var fileName=[];
-var fileContents=[];
-var uploadTime =['12:03', '14:20', '14:30','12:03', '14:20', '14:30','12:03', '14:20', '14:30'];
-var userName = ['jin', 'woo', 'ahn','jin', 'woo', 'ahn','jin', 'woo', 'ahn'];
 //var fileContents=['c1fjsdhkfjhsdkjfhsdkjfhsdjkfhjksdhfkjsdhfjksdhfkjdshfjksdhjkfhsdjkfhsdkjfhjksdhjfjkds','c2','c3','c1','c2','c3','c1','c2','c3'];
 
 
@@ -272,12 +360,86 @@ app.get('/index.html', function(req, res){
 });
 app.get('/board', function(req,res){
 
-  var user_id='user2';
+//  var user_id='user2';
 	//디비로 부터 파일을 받아와서 뿌려야.
   //여기서 db를 받으면 안되고, 초반부에 질러줘야 한다.
+  if(req.query.id)
+  {
+    console.log('delete');
+    //var sql="select file_id, file_name, user_contents from file where id=?";
+    var sql = "delete from file_history where ?=file_id"
+    var params = [req.query.id];
+    console.log(req.query.id, "zzzzzzzz");
+    pool.query(sql,params, function(err, rows, fields){
+        if(err)
+          console.log(err);
 
+          var sql = "delete from file where ?=file_id"
+          var params = [req.query.id];
+          console.log(req.query.id, "zzzzzzzz");
+          pool.query(sql,params, function(err, rows, fields){
+              if(err)
+                console.log(err);
+
+                //  res.render('board.html',{_id : fileID, _name : fileName, _time : uploadTime, _user : user_id});
+
+                else{
+                  console.log("돌아왔어맨");
+                  var sql="select file_id, file_name, user_contents from file where id=?";
+                  var params = [user_id];
+                  fileID=[];
+                  fileName=[];
+                  fileContents=[];
+                  pool.query(sql,params, function(err, rows, fields){
+                      if(err)
+                        console.log(err);
+                      else{
+                        for(var i=0;i<rows.length;i++)
+                          {
+                            //겹치는애 있는지 확인하고 없을 경우 업데이트
+                            var dupFlag=0;
+                            for(var j=0;j<fileID.length;j++)
+                            {
+                            //  console.log('h');
+                              if (fileID[j]==rows[i].file_id)
+                              {
+                              //  console.log('z');
+                                dupFlag=1;
+                                break;
+                              }
+                            }
+
+                            if(dupFlag==0)
+                            {
+                              fileID.push(rows[i].file_id);
+                              fileName.push(rows[i].file_name);
+                              fileContents.push(rows[i].user_contents);
+                              //console.log(rows[i].file_name, rows[i].file_id. rows[i].user_contents);
+                            }
+
+                          }
+                          console.log(fileID);
+                          res.render('board.html',{_id : fileID, _name : fileName, _time : uploadTime, _user : user_id});
+
+                      }
+                  });
+                }
+
+          });
+
+    });
+
+
+
+  }
+
+else{
+  console.log("돌아왔어맨");
   var sql="select file_id, file_name, user_contents from file where id=?";
   var params = [user_id];
+  fileID=[];
+  fileName=[];
+  fileContents=[];
   pool.query(sql,params, function(err, rows, fields){
       if(err)
         console.log(err);
@@ -306,11 +468,12 @@ app.get('/board', function(req,res){
             }
 
           }
+          console.log(fileID);
           res.render('board.html',{_id : fileID, _name : fileName, _time : uploadTime, _user : user_id});
 
       }
   });
-
+}
   //////////////////////////
 	//res.render('board.html',{_id : fileID, _name : fileName, _time : uploadTime, _user : user_id});
 })
@@ -383,3 +546,55 @@ app.get('/board_contents', function(req,res){
 app.listen(3001, function(){
 	console.log('Connected 3001 port!' );
 });
+
+
+//업로드 부위
+//var upload = multer({storage: _storage});
+
+//var upload = require('/routes/upload.js')
+
+//app.use(express.static('public')); //public dir   을 정적인 파일이 위치하는 dir로 하겠다.
+//app.use(bodyParser.urlencoded({extended:false}));
+
+app.post('/form_receiver', function(req, res){
+   var text1 = req.body.edit;
+   var text2 = req.body.edit2;
+//   var upload = req.body.file_upload;
+   res.send(text1 + text2)
+   res.send(upload);
+})
+
+app.get('/editors',function(req, res){
+  res.render('editors.html');
+})
+
+app.get('/upload', function(req, res){
+   res.render('file_upload.html');
+})
+/*
+app.post('/upload', upload.single('file_upload2'),  function(req, res){
+    //  console.log(req.file);
+      console.log(req.param('comments'), req.param('title'));
+    //  console.log(req.param('file'));
+//      req.param('file')
+
+      fs.readFile('./uploads/' + req.file.originalname,  function(err, data) {
+        if(err) throw err;
+         console.log('data' + data);
+    //     res.writeHead(200, {"ContentType": "text/plain"})
+    //     res.end(data);
+
+    //db 소환
+    //var sql="select file_id, file_name, user_contents from file where id=?";
+    var sql="insert into file (file_name, user_contents, id) values (?,?,?)"
+    var params = [req.param('title'), data, user_id];
+    //console.log(user_id+"zzz");
+    pool.query(sql,params, function(err, rows, fields){
+        if(err)
+          console.log(err);
+
+          res.render('board.html',{_id : fileID, _name : fileName, _time : uploadTime, _user : user_id});
+    });
+  });
+});
+*/
